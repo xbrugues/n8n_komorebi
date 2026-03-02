@@ -1,0 +1,182 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "subir-producto",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c3ea1eee-8bc6-4919-a972-24b88f28f531",
+      "name": "Webhook",
+      "webhookId": "09f2ed07-0e3e-45ed-af03-e1386139fd9b"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.query.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "84cae4a2-c921-4526-b993-4afe1d4e258d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "29593b38-c5b6-4b4d-a8db-3f14adf20428",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "347bc958-8121-4a82-8126-46b503874110",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "resource": "product",
+        "operation": "create",
+        "name": "",
+        "additionalFields": {},
+        "dimensionsUi": {},
+        "imagesUi": {},
+        "metadataUi": {}
+      },
+      "type": "n8n-nodes-base.wooCommerce",
+      "typeVersion": 1,
+      "position": [
+        976,
+        0
+      ],
+      "id": "16e2c31f-d4d1-46fa-b938-cf41ef399444",
+      "name": "Create a product"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        496,
+        208
+      ],
+      "id": "d9926935-f1e7-48b0-8564-6818440e2928",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "faulqDzFblBlxj2R",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create a product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8b2d7a06-070e-42e2-81fe-4c1c6fc0e4a7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ab033b016bd9e5ddc5a2974775a61df6b5465f2b7120bba9d387a137ad3e2f40"
+  },
+  "id": "eFrgDTRXlzaHjszm",
+  "tags": []
+}
