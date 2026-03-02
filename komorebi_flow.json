@@ -42,7 +42,10 @@
         "operation": "extractHtmlContent",
         "extractionValues": {
           "values": [
-            {}
+            {
+              "key": "solo_descripcion",
+              "cssSelector": "[id^=\"Product-content-tab\"] .rte"
+            }
           ]
         },
         "options": {}
@@ -58,6 +61,8 @@
     },
     {
       "parameters": {
+        "promptType": "define",
+        "text": "=Actúa como un extractor de datos profesional para Proyecto Komorebi. \nTu objetivo es analizar el HTML que te adjunto a continuación y devolver exclusivamente un objeto JSON.\n\nEstructura del JSON:\n- name: Nombre del producto\n- price: Precio (solo número)\n- description: Descripción optimizada para SEO\n- attributes: { Autora, Encuadernación, Páginas }\n- images: [Lista de URLs de imágenes]\n\nAquí tienes el código HTML real que debes procesar:\n{{ $node[\"HTTP Request\"].json[\"data\"] }}",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -86,10 +91,12 @@
         0
       ],
       "id": "16e2c31f-d4d1-46fa-b938-cf41ef399444",
-      "name": "Create a product"
+      "name": "Create a product",
+      "disabled": true
     },
     {
       "parameters": {
+        "model": "llama-3.1-8b-instant",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
@@ -172,7 +179,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "8b2d7a06-070e-42e2-81fe-4c1c6fc0e4a7",
+  "versionId": "a85a02f0-668f-426b-847e-8581ae2fe41e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ab033b016bd9e5ddc5a2974775a61df6b5465f2b7120bba9d387a137ad3e2f40"
