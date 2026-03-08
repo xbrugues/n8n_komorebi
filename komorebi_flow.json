@@ -10,16 +10,17 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        0,
-        0
+        -160,
+        160
       ],
       "id": "c3ea1eee-8bc6-4919-a972-24b88f28f531",
       "name": "Webhook",
-      "webhookId": "09f2ed07-0e3e-45ed-af03-e1386139fd9b"
+      "webhookId": "09f2ed07-0e3e-45ed-af03-e1386139fd9b",
+      "disabled": true
     },
     {
       "parameters": {
-        "url": "={{ $json.query.url }}",
+        "url": "={{ $json.URL }}",
         "options": {
           "response": {
             "response": {
@@ -31,7 +32,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        208,
+        160,
         0
       ],
       "id": "84cae4a2-c921-4526-b993-4afe1d4e258d",
@@ -43,8 +44,8 @@
         "extractionValues": {
           "values": [
             {
-              "key": "solo_descripcion",
-              "cssSelector": "[id^=\"Product-content-tab\"] .rte"
+              "key": "texto",
+              "cssSelector": "body"
             }
           ]
         },
@@ -53,7 +54,7 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        416,
+        352,
         0
       ],
       "id": "29593b38-c5b6-4b4d-a8db-3f14adf20428",
@@ -62,13 +63,13 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Actúa como un extractor de datos profesional para Proyecto Komorebi. \nTu objetivo es analizar el HTML que te adjunto a continuación y devolver exclusivamente un objeto JSON.\n\nEstructura del JSON:\n- name: Nombre del producto\n- price: Precio (solo número)\n- description: Descripción optimizada para SEO\n- attributes: { Autora, Encuadernación, Páginas }\n- images: [Lista de URLs de imágenes]\n\nAquí tienes el código HTML real que debes procesar:\n{{ $node[\"HTTP Request\"].json[\"data\"] }}",
+        "text": "=Actúa como un extractor de datos profesional para Proyecto Komorebi. \nTu objetivo es analizar el HTML que te adjunto a continuación y devolver exclusivamente un objeto JSON.\n\nTeniendo en cuenta esto, necesito que redactes el texto que irá en la descripción del producto, la descripción breve y el título del producto, además de otras cosas que tú me recomiendes. Los textos deben quedar naturales. Para que lo tengas en cuenta, la web en la que aparecen estos productos es de una tienda de papelería bonita, de diseño y calidad.\n\nEstructura del JSON:\n- name: Nombre del producto\n- description: Descripción optimizada para SEO\n- attributes: { Autora, Encuadernación, Páginas }\n- images: [Lista de URLs de imágenes]\n\nDe la lista de URLs de imágenes encontradas, selecciona solo las 5 más representativas. Prioriza: 1. La foto de portada (suele ser la primera), 2. Una foto del interior, 3. Una foto de los extras o pegatinas (si el nombre del archivo contiene 'sticker' o 'extra'), 4. Una foto de estilo de vida o detalle. Devuélveme el campo 'images' solo con esas 5 URLs seleccionadas\n\nAquí tienes el código HTML real que debes procesar:\n{{ $node[\"HTTP Request\"].json[\"data\"] }}",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        624,
+        544,
         0
       ],
       "id": "347bc958-8121-4a82-8126-46b503874110",
@@ -78,7 +79,7 @@
       "parameters": {
         "resource": "product",
         "operation": "create",
-        "name": "",
+        "name": "={{ $node[\"CodeJS\"].json[\"name\"] }}",
         "additionalFields": {},
         "dimensionsUi": {},
         "imagesUi": {},
@@ -87,7 +88,7 @@
       "type": "n8n-nodes-base.wooCommerce",
       "typeVersion": 1,
       "position": [
-        976,
+        1072,
         0
       ],
       "id": "16e2c31f-d4d1-46fa-b938-cf41ef399444",
@@ -96,21 +97,183 @@
     },
     {
       "parameters": {
-        "model": "llama-3.1-8b-instant",
+        "documentId": {
+          "__rl": true,
+          "value": "1z3OHTqsmSChWbZ1enJ91nAghUJFjCEKIlQaBJvFbAeA",
+          "mode": "list",
+          "cachedResultName": "Excel-Items-Komorebi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z3OHTqsmSChWbZ1enJ91nAghUJFjCEKIlQaBJvFbAeA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z3OHTqsmSChWbZ1enJ91nAghUJFjCEKIlQaBJvFbAeA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Estado",
+              "lookupValue": "PENDIENTE"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        0
+      ],
+      "id": "f968734b-1493-47ae-a8e7-7b1d4b56e9a5",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "dz1QCt7uju54TumI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
         496,
         208
       ],
-      "id": "d9926935-f1e7-48b0-8564-6818440e2928",
-      "name": "Groq Chat Model",
+      "id": "d4660aa1-7005-4834-8ee7-5c5ddafce06c",
+      "name": "Google Gemini Chat Model",
       "credentials": {
-        "groqApi": {
-          "id": "faulqDzFblBlxj2R",
-          "name": "Groq account"
+        "googlePalmApi": {
+          "id": "0fKq2vqh8KiLhozb",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Cogemos el texto sucio que viene de Gemini\nconst rawOutput = $json.output; \n\n// Limpiamos los bloques de código Markdown (```json y ```)\nconst cleanJsonString = rawOutput.replace(/```json|```/g, \"\").trim();\n\n// Convertimos ese texto en un objeto real de n8n\nreturn JSON.parse(cleanJsonString);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        0
+      ],
+      "id": "16ace1a8-e5df-48d8-9c01-ec04e7b4eb3c",
+      "name": "CodeJS"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1z3OHTqsmSChWbZ1enJ91nAghUJFjCEKIlQaBJvFbAeA",
+          "mode": "list",
+          "cachedResultName": "Excel-Items-Komorebi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z3OHTqsmSChWbZ1enJ91nAghUJFjCEKIlQaBJvFbAeA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z3OHTqsmSChWbZ1enJ91nAghUJFjCEKIlQaBJvFbAeA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Estado": "EN PROCESO",
+            "URL": "={{ $json.URL }}"
+          },
+          "matchingColumns": [
+            "URL"
+          ],
+          "schema": [
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Precio Base",
+              "displayName": "Precio Base",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categoría",
+              "displayName": "Categoría",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        16,
+        0
+      ],
+      "id": "99473f0a-7222-4a08-875f-03a4ac952e53",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "dz1QCt7uju54TumI",
+          "name": "Google Sheets account"
         }
       }
     }
@@ -119,13 +282,7 @@
   "connections": {
     "Webhook": {
       "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "HTTP Request": {
@@ -154,6 +311,44 @@
       "main": [
         [
           {
+            "node": "CodeJS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a product": {
+      "main": [
+        []
+      ]
+    },
+    "CodeJS": {
+      "main": [
+        [
+          {
             "node": "Create a product",
             "type": "main",
             "index": 0
@@ -161,12 +356,12 @@
         ]
       ]
     },
-    "Groq Chat Model": {
-      "ai_languageModel": [
+    "Update row in sheet": {
+      "main": [
         [
           {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
+            "node": "HTTP Request",
+            "type": "main",
             "index": 0
           }
         ]
@@ -179,7 +374,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "a85a02f0-668f-426b-847e-8581ae2fe41e",
+  "versionId": "3e9ab0f6-cc55-4936-9698-4199368f47a1",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ab033b016bd9e5ddc5a2974775a61df6b5465f2b7120bba9d387a137ad3e2f40"
